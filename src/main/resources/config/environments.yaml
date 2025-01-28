@@ -1,0 +1,7 @@
+environments:
+  staging:
+    base_url: "https://www.amazon.in"
+    username: "staging_user"
+  production:
+    base_url: "https://www.amazon.in"
+    username: "production_user"
