@@ -1,33 +1,35 @@
 pipeline {
     agent any
-
     tools {
-        maven 'Maven'
+        jdk 'jdk21'
     }
-
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/njacksonnie/SeleniumTestNGFramework.git'
+                git branch: 'main', url: 'https://github.com/njacksonnie/SeleniumTestNGFramework.git'
             }
         }
-
-        stage('Test') {
+        stage('Build Image') {
             steps {
-                sh 'mvn clean test'
+                script {
+                    docker.build("selenium-tests:${env.BUILD_ID}")
+                }
             }
         }
-
-        stage('Publish Report') {
+        stage('Run Tests') {
             steps {
-                publishHTML([
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: true,
-                    keepAll: true,
-                    reportDir: 'target/spark-reports',
-                    reportFiles: 'index.html',
-                    reportName: 'ExtentReports'
-                ])
+                script {
+                    docker.image("selenium-tests:${env.BUILD_ID}").run(
+                        "--shm-size=2g --platform linux/arm64"
+                    )
+                }
+            }
+        }
+        stage('Cleanup') {
+            steps {
+                script {
+                    sh 'docker system prune -f'
+                }
             }
         }
     }

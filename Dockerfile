@@ -1,9 +1,15 @@
-FROM jenkins/jenkins:latest-jdk21
+FROM --platform=linux/arm64 eclipse-temurin:21-jdk
 
-USER root
-
-# Install Maven
+# Install Chrome for Selenium
 RUN apt-get update && \
-    apt-get install -y maven
+    apt-get install -y \
+    chromium \
+    chromium-driver
 
-USER jenkins
+WORKDIR /app
+COPY . .
+
+# Example for Maven
+RUN mvn clean install -DskipTests
+
+CMD ["mvn", "test"]
