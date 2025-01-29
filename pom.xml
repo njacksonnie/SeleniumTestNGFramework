@@ -96,14 +96,6 @@
         </resources>
         <plugins>
             <!-- Maven Compiler Plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version> <!-- Ensure latest version if needed -->
-                <configuration>
-                    <release>21</release> <!-- If using release -->
-                </configuration>
-            </plugin>
 
             <!-- Maven Surefire Plugin -->
             <plugin>
