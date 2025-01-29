@@ -1,20 +1,18 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'eclipse-temurin:21-jdk-jammy'  // M1 compatible image
+            args '--platform linux/arm64 -v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
     tools {
-        jdk 'jdk21'
+        jdk 'JDK 21'  // Case-sensitive match
     }
     stages {
         stage('Checkout') {
             steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/main']],
-                    extensions: [],
-                    userRemoteConfigs: [[
-                        credentialsId: 'github-creds',
-                        url: 'https://github.com/njacksonnie/SeleniumTestNGFramework.git'
-                    ]]
-                ])
+                git branch: 'main',
+                url: 'https://github.com/njacksonnie/SeleniumTestNGFramework.git'
             }
         }
         stage('Build') {
