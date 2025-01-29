@@ -6,30 +6,25 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/njacksonnie/SeleniumTestNGFramework.git'
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    extensions: [],
+                    userRemoteConfigs: [[
+                        credentialsId: 'github-creds',
+                        url: 'https://github.com/njacksonnie/SeleniumTestNGFramework.git'
+                    ]]
+                ])
             }
         }
-        stage('Build Image') {
+        stage('Build') {
             steps {
-                script {
-                    docker.build("selenium-tests:${env.BUILD_ID}")
-                }
+                sh 'mvn clean install -DskipTests'
             }
         }
-        stage('Run Tests') {
+        stage('Test') {
             steps {
-                script {
-                    docker.image("selenium-tests:${env.BUILD_ID}").run(
-                        "--shm-size=2g --platform linux/arm64"
-                    )
-                }
-            }
-        }
-        stage('Cleanup') {
-            steps {
-                script {
-                    sh 'docker system prune -f'
-                }
+                sh 'mvn test'
             }
         }
     }
